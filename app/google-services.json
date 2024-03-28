@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1025196084892",
+    "project_id": "now-this-pill",
+    "storage_bucket": "now-this-pill.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1025196084892:android:674e0e5bfba90a7896e759",
+        "android_client_info": {
+          "package_name": "com.example.now_this_pill"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSU_5vExsIR636MR7XEDCq8RKl8DaknTQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
