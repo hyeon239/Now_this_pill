@@ -10,19 +10,19 @@
               <deviceKey>
                 <Key>
                   <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="C:\Users\hyeon\.android\avd\Nexus_5_API_28.avd" />
+                  <value value="C:\Users\hyeon\.android\avd\Pixel_5_API_28.avd" />
                 </Key>
               </deviceKey>
             </Target>
           </targetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-03-27T14:12:40.696347Z" />
+          <timeTargetWasSelectedWithDropDown value="2024-03-31T14:11:51.871289700Z" />
           <targetsSelectedWithDialog>
             <Target>
               <type value="QUICK_BOOT_TARGET" />
               <deviceKey>
                 <Key>
                   <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="C:\Users\hyeon\.android\avd\Nexus_5_API_28.avd" />
+                  <value value="C:\Users\hyeon\.android\avd\Nexus_5X_API_28_2_3.avd" />
                 </Key>
               </deviceKey>
             </Target>
