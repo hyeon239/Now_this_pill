@@ -6,22 +6,26 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="성결대학교 종합설계 3조 지금이약!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:id="@+id/main_container"
+        tools:ignore="MissingConstraints">
+    </FrameLayout>
 
-    <Button
-        android:id="@+id/btn_logout"
-        android:layout_width="wrap_content"
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation_view"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="로그아웃"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="161dp"
-        tools:layout_editor_absoluteY="432dp" />
+        android:layout_gravity="bottom"
+        app:labelVisibilityMode="labeled"
+        app:itemBackground="@color/white"
+        app:itemIconTint="@drawable/bottom_nav_icon_color_selector"
+        app:itemRippleColor="@null"
+        app:itemTextColor="@drawable/bottom_nav_text_color_selector"
+        app:menu="@menu/bottom_menu"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+

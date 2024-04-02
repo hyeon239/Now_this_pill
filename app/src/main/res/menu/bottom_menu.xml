@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:ignore="ExtraText">
+
+    <item
+        android:id="@+id/home"
+        android:enabled="true"
+        android:icon="@drawable/m1_home_0"
+        android:title="홈"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/schedule"
+        android:enabled="true"
+        android:icon="@drawable/m2_schedule_0"
+        android:title="일정"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/calendar"
+        android:enabled="true"
+        android:icon="@drawable/m3_calendar_0"
+        android:title="달력"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/setting"
+        android:enabled="true"
+        android:icon="@drawable/m4_setting_0"
+        android:title="설정"
+        app:showAsAction="always"/>
+</menu>
