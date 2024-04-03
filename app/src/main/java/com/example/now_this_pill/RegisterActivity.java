@@ -103,6 +103,12 @@ public class RegisterActivity extends AppCompatActivity {
                 return; // 일치하지 않으면 회원가입을 진행하지 않음
             }
 
+            // 이름 필드가 비어 있는지 확인
+            if (TextUtils.isEmpty(strName)) {
+                Toast.makeText(RegisterActivity.this, "이름을 입력해주세요.", Toast.LENGTH_SHORT).show();
+                return; // 이름이 비어있으면 회원가입을 중단
+            }
+
 
                 mFirebaseAuth.createUserWithEmailAndPassword(strEmail, strPwd).addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
