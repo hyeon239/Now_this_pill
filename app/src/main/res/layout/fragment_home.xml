@@ -3,24 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Fragment.HomeFragment">
 
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="***홈 화면***" />
-    <!-- 사용자의 이메일을 나타내는 TextView -->
-    <TextView
-        android:id="@+id/text_email"
+        android:id="@+id/ex_home"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:layout_gravity="center"
-        android:padding="16dp"
-        android:textColor="@android:color/black"
-        android:text="이메일: " />
-
-
+        android:text="***홈 화면***"
+        android:textSize="40dp"/>
+    <!-- 사용자의 이메일을 나타내는 TextView -->
 
 </FrameLayout>

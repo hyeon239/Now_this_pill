@@ -13,6 +13,12 @@
         android:theme="@style/Theme.Now_this_pill"
         tools:targetApi="31">
         <activity
+            android:name=".Setting.VersionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Setting.InquiryActivity"
+            android:exported="false" />
+        <activity
             android:name=".SettingActivity"
             android:exported="false" />
         <activity
