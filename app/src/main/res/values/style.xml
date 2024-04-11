@@ -5,4 +5,5 @@
     <item name="colorPrimary">#003770</item>
     <item name="colorPrimaryDark">#003770</item>
     <!-- 기타 필요한 속성들... -->
+        <item name="colorAccent">@color/main_color</item>
 </style></resources>
