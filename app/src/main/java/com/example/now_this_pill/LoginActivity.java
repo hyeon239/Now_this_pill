@@ -2,6 +2,7 @@ package com.example.now_this_pill;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -21,10 +22,12 @@ import com.google.firebase.auth.FirebaseAuth;
 public class LoginActivity extends AppCompatActivity {
 
     private TextView btn_register_1;
-
-    private FirebaseAuth mFirebaseAuth; //파이어베이스 인증 관련
+    private FirebaseAuth mFirebaseAuth;
     private EditText et_email, et_pwd;
     private Button btn_login;
+
+    // 변수 추가
+    private boolean doubleBackToExitPressedOnce = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,12 +50,9 @@ public class LoginActivity extends AppCompatActivity {
             String strEmail = et_email.getText().toString();
             String strPwd = et_pwd.getText().toString();
 
-            // 입력 필드가 비어 있는지 확인
             if (strEmail.isEmpty() || strPwd.isEmpty()) {
-                // 안내 메시지 표시
                 Toast.makeText(LoginActivity.this, "이메일과 비밀번호를 입력해주세요", Toast.LENGTH_SHORT).show();
             } else {
-                // 비어 있지 않으면 로그인 시도
                 mFirebaseAuth.signInWithEmailAndPassword(strEmail, strPwd).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(Task<AuthResult> task) {
@@ -67,5 +67,20 @@ public class LoginActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    // 뒤로 가기 버튼 처리
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show();
+
+        // 두 번째 누름부터 종료
+        new Handler().postDelayed(() -> doubleBackToExitPressedOnce = false, 2000);
     }
 }

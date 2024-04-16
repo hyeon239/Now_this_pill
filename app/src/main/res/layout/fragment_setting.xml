@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".Fragment.SettingFragment">
 
-    <!-- 사용자 정보 이미지 -->
     <ImageView
         android:id="@+id/icon_nobackground"
         android:layout_width="130dp"
