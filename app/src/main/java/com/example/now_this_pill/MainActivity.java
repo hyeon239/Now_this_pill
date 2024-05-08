@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.CalendarView;
+import android.widget.TextView;
 
 import com.example.now_this_pill.Fragment.CalendarFragment;
 import com.example.now_this_pill.Fragment.HomeFragment;
@@ -13,6 +15,10 @@ import com.example.now_this_pill.Fragment.SettingFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
+
+import java.text.DateFormat;
+
+import javax.annotation.Nonnull;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -73,4 +79,6 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.getMenu().findItem(R.id.calendar).setIcon(R.drawable.m3_calendar_0);
         bottomNavigationView.getMenu().findItem(R.id.setting).setIcon(R.drawable.m4_setting_0);
     }
+
+
 }
