@@ -1,10 +1,14 @@
 package com.example.now_this_pill;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-
+import androidx.appcompat.widget.Toolbar;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.example.now_this_pill.Fragment.CalendarFragment;
 import com.example.now_this_pill.Fragment.HomeFragment;
@@ -21,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setBottomNavigationView();
 
         // 앱 초기 실행 시 홈화면으로 설정
@@ -43,18 +47,22 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.home:
                         item.setIcon(R.drawable.m1_home_1);
                         getSupportFragmentManager().beginTransaction().replace(R.id.main_container, new HomeFragment()).commit();
+                        ((TextView) findViewById(R.id.toolbar_title)).setText("지금이약!");
                         return true;
                     case R.id.schedule:
                         item.setIcon(R.drawable.m2_schedule_1);
                         getSupportFragmentManager().beginTransaction().replace(R.id.main_container, new ScheduleFragment()).commit();
+                        ((TextView) findViewById(R.id.toolbar_title)).setText("일정");
                         return true;
                     case R.id.calendar:
                         item.setIcon(R.drawable.m3_calendar_1);
                         getSupportFragmentManager().beginTransaction().replace(R.id.main_container, new CalendarFragment()).commit();
+                        ((TextView) findViewById(R.id.toolbar_title)).setText("달력");
                         return true;
                     case R.id.setting:
                         item.setIcon(R.drawable.m4_setting_1);
                         getSupportFragmentManager().beginTransaction().replace(R.id.main_container, new SettingFragment()).commit();
+                        ((TextView) findViewById(R.id.toolbar_title)).setText("설정");
                         return true;
                     default:
                         return false;
@@ -73,4 +81,7 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.getMenu().findItem(R.id.calendar).setIcon(R.drawable.m3_calendar_0);
         bottomNavigationView.getMenu().findItem(R.id.setting).setIcon(R.drawable.m4_setting_0);
     }
+
+
+
 }
