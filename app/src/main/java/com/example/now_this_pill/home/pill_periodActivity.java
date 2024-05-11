@@ -1,4 +1,4 @@
-package com.example.now_this_pill.Setting;
+package com.example.now_this_pill.home;
 
 import android.os.Bundle;
 
@@ -10,14 +10,14 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.now_this_pill.R;
 
-public class InquiryActivity extends AppCompatActivity {
+public class pill_periodActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_inquiry);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.pill_period_1), (v, insets) -> {
+        setContentView(R.layout.activity_pill_period);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.pill_period), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
