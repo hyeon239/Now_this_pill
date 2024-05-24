@@ -74,6 +74,7 @@ public class SettingFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     handleMenuItemClick(position);
+
                 }
             });
             settingLayout.addView(menuItemView);

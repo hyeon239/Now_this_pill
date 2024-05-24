@@ -2,21 +2,22 @@ package com.example.now_this_pill;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import android.content.Intent;
+
 import android.os.Bundle;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.MenuItem;
+import androidx.appcompat.widget.Toolbar;
+
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.now_this_pill.Fragment.CalendarFragment;
 import com.example.now_this_pill.Fragment.HomeFragment;
 import com.example.now_this_pill.Fragment.ScheduleFragment;
 import com.example.now_this_pill.Fragment.SettingFragment;
+import com.example.now_this_pill.home.PillEatFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -46,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.home:
                         item.setIcon(R.drawable.m1_home_1);
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_container, new HomeFragment()).commit();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.main_container, new PillEatFragment()).commit();
                         ((TextView) findViewById(R.id.toolbar_title)).setText("지금이약!");
                         return true;
                     case R.id.schedule:
@@ -82,6 +83,42 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.getMenu().findItem(R.id.setting).setIcon(R.drawable.m4_setting_0);
     }
 
+    public void setToolbarTitle(String title) {
+        TextView toolbarTitle = findViewById(R.id.toolbar_title);
+        if (toolbarTitle != null) {
+            toolbarTitle.setText(title);
+        }
+    }
+
+
+    // 툴바에 뒤로가기 버튼을 추가하고 클릭 이벤트 처리
+    public void addBackButtonToToolbar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.btn_back); // 여기서 btn_back은 여러분의 뒤로가기 버튼 이미지입니다.
+        }
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+    }
+
+    // 하단 메뉴바를 보이게 하는 메서드
+    public void showBottomNavigationBar() {
+        // 하단 메뉴바를 가져오고 보이게 설정
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_view);
+        bottomNavigationView.setVisibility(View.VISIBLE);
+    }
+
+    public void hideBottomNavigationBar() {
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_view);
+        bottomNavigationView.setVisibility(View.GONE);
+    }
 
 
 }

@@ -45,6 +45,11 @@ public class LoginActivity extends AppCompatActivity {
         et_email = findViewById(R.id.et_email);
         et_pwd = findViewById(R.id.et_pwd);
 
+        // 임시로 아이디와 비밀번호 설정
+        et_email.setText("x@naver.com");
+        et_pwd.setText("xxxxxx");
+
+
         btn_login = findViewById(R.id.btn_login);
         btn_login.setOnClickListener(v -> {
             String strEmail = et_email.getText().toString();

@@ -1,31 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <!-- 기본 앱 테마 -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light">
-        <!-- 기본 색상을 파란색으로 설정 -->
-        <item name="colorPrimary">#FFFFFF</item>
-        <item name="colorPrimaryDark">#003770</item>
-        <!-- 기타 필요한 속성들... -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <!-- 기본 색상을 파란색으로 설정 -->
+    <item name="colorPrimary">#003770</item>
+    <item name="colorPrimaryDark">#003770</item>
+    <!-- 기타 필요한 속성들... -->
         <item name="colorAccent">@color/main_color</item>
-    </style>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
 
-
-
-    <!-- 스플래시 화면 테마 -->
-    <style name="SplashTheme" parent="Theme.AppCompat.Light.NoActionBar">
-    </style>
-
-    <!-- 로그인 화면 테마 -->
-    <style name="LoginTheme" parent="Theme.AppCompat.Light.NoActionBar">
-    </style>
-
-    <!-- 회원 가입 화면 테마 -->
-    <style name="SignUpTheme" parent="Theme.AppCompat.Light.NoActionBar">
-    </style>
-
-    <!-- 팝업 메뉴를 위한 테마 -->
-    <style name="PopupMenuOverlay" parent="ThemeOverlay.AppCompat.Light" />
+        <!--
+        <item name="android:windowBackground">@drawable/splash_background</item>
+        -->
+</style>
 
 
 </resources>

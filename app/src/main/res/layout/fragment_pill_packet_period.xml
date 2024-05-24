@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/pill_period_packet"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".home.pill_periodFragment">
+
+    <ScrollView
+        android:id="@+id/scrollview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/pill_period"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:context=".home.pill_periodFragment">
+
+            <LinearLayout
+                android:id="@+id/linearLayout_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                app:layout_constraintBottom_toTopOf="@id/view_1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/textView_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="약 이름을 입력해주세요."
+                    android:textColor="@color/black"
+                    android:textSize="17dp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/editText_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="#003770"
+                    android:ems="10"
+                    android:hint="약 이름"
+                    android:inputType="text" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/view_1"
+                android:layout_width="wrap_content"
+                android:layout_height="8dp"
+                android:background="#EBEFF4"
+                app:layout_constraintBottom_toTopOf="@id/linearLayout_2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/linearLayout_1" />
+
+            <LinearLayout
+                android:id="@+id/linearLayout_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                app:layout_constraintBottom_toTopOf="@id/view_2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/view_1">
+
+
+                <TextView
+                    android:id="@+id/choose_weekly"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="약을 드시는 요일을 선택해주세요."
+                    android:textColor="@color/black"
+                    android:textSize="17dp"
+                    android:textStyle="bold" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp">
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/sundayButton"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/btn_circle"
+                        android:text="일"
+                        android:textColor="@color/main_color"
+                        android:textSize="18dp"
+                        app:layout_constraintEnd_toStartOf="@id/mondayButton"
+                        app:layout_constraintStart_toStartOf="parent"
+                        tools:ignore="MissingConstraints" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/mondayButton"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/btn_circle"
+                        android:text="월"
+                        android:textColor="@color/main_color"
+                        android:textSize="18dp"
+                        app:layout_constraintEnd_toStartOf="@+id/tuesdayButton"
+                        app:layout_constraintStart_toEndOf="@id/sundayButton"
+                        tools:ignore="MissingConstraints" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/tuesdayButton"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/btn_circle"
+                        android:text="화"
+                        android:textColor="@color/main_color"
+                        android:textSize="18dp"
+                        app:layout_constraintEnd_toStartOf="@+id/wednesdayButton"
+                        app:layout_constraintStart_toEndOf="@id/mondayButton"
+                        tools:ignore="MissingConstraints" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/wednesdayButton"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/btn_circle"
+                        android:text="수"
+                        android:textColor="@color/main_color"
+                        android:textSize="18dp"
+                        app:layout_constraintEnd_toStartOf="@+id/thursdayButton"
+                        app:layout_constraintStart_toEndOf="@id/tuesdayButton"
+                        tools:ignore="MissingConstraints" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/thursdayButton"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/btn_circle"
+                        android:text="목"
+                        android:textColor="@color/main_color"
+                        android:textSize="18dp"
+                        app:layout_constraintEnd_toStartOf="@+id/fridayButton"
+                        app:layout_constraintStart_toEndOf="@id/wednesdayButton"
+                        tools:ignore="MissingConstraints" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/fridayButton"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/btn_circle"
+                        android:text="금"
+                        android:textColor="@color/main_color"
+                        android:textSize="18dp"
+                        app:layout_constraintEnd_toStartOf="@+id/saturdayButton"
+                        app:layout_constraintStart_toEndOf="@id/thursdayButton"
+                        tools:ignore="MissingConstraints" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/saturdayButton"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/btn_circle"
+                        android:text="토"
+                        android:textColor="@color/main_color"
+                        android:textSize="18dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/fridayButton"
+                        tools:ignore="MissingConstraints" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
+
+
+            <View
+                android:id="@+id/view_2"
+                android:layout_width="wrap_content"
+                android:layout_height="8dp"
+                android:background="#EBEFF4"
+                app:layout_constraintBottom_toTopOf="@id/linearLayout_4"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/linearLayout_2" />
+
+
+
+            <LinearLayout
+                android:id="@+id/linearLayout_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                app:layout_constraintBottom_toTopOf="@+id/view_4"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/view_2">
+
+                <TextView
+                    android:id="@+id/textView_3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="하루에 몇 번 복용하세요?"
+                    android:textColor="@color/black"
+                    android:textSize="17dp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal">
+
+                    <Spinner
+                        android:id="@+id/pillFrequencySpinner"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:entries="@array/pill_frequencies" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="번"
+                        android:textColor="@color/black"
+                        android:textSize="17dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <View
+                android:id="@+id/view_4"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:background="#EBEFF4"
+                app:layout_constraintBottom_toBottomOf="@id/linearLayout_5"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout_4" />
+
+            <LinearLayout
+                android:id="@+id/linearLayout_5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toTopOf="@+id/view_5"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/view_4">
+
+                <LinearLayout
+                    android:id="@+id/layout1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:text="복용시간1"
+                        android:textColor="@color/black"
+                        android:textSize="17dp" />
+
+                    <TimePicker
+                        android:id="@+id/timePicker"
+                        android:layout_width="250dp"
+                        android:layout_height="100dp"
+                        android:timePickerMode="spinner" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layout2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:text="복용시간2"
+                        android:textColor="@color/black"
+                        android:textSize="17dp" />
+
+                    <TimePicker
+                        android:id="@+id/timePicker_2"
+                        android:layout_width="250dp"
+                        android:layout_height="100dp"
+                        android:timePickerMode="spinner" />
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/layout3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:text="복용시간3"
+                        android:textColor="@color/black"
+                        android:textSize="17dp" />
+
+                    <TimePicker
+                        android:id="@+id/timePicker_3"
+                        android:layout_width="250dp"
+                        android:layout_height="100dp"
+                        android:timePickerMode="spinner" />
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/layout4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:text="복용시간4"
+                        android:textColor="@color/black"
+                        android:textSize="17dp" />
+
+                    <TimePicker
+                        android:id="@+id/timePicker_4"
+                        android:layout_width="250dp"
+                        android:layout_height="100dp"
+                        android:timePickerMode="spinner" />
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/layout5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:text="복용시간5"
+                        android:textColor="@color/black"
+                        android:textSize="17dp" />
+
+                    <TimePicker
+                        android:id="@+id/timePicker_5"
+                        android:layout_width="250dp"
+                        android:layout_height="100dp"
+                        android:timePickerMode="spinner" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <View
+                android:id="@+id/view_5"
+                android:layout_width="wrap_content"
+                android:layout_height="8dp"
+                android:background="#EBEFF4"
+                app:layout_constraintBottom_toTopOf="@+id/linearLayout_6"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout_5" />
+
+            <LinearLayout
+                android:id="@+id/linearLayout_6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_margin="16dp"
+                app:layout_constraintBottom_toTopOf="@+id/view_6"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/view_5"
+                tools:ignore="NotSibling">
+
+                <EditText
+                    android:id="@+id/memo_border"
+                    android:padding="15dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="110dp"
+                    android:background="@drawable/memo"
+                    android:gravity="top"
+                    android:hint="약에 대한 메모를 입력하세요."
+                    android:textSize="15dp" />
+            </LinearLayout>
+            <View
+                android:id="@+id/view_6"
+                android:layout_width="wrap_content"
+                android:layout_height="90dp"
+                android:background="#ffffff"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout_6" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/btn_store"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ffffff"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        >
+
+        <android.widget.Button
+            android:id="@+id/btn_store_2"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_margin="15dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/rounded_button"
+            android:text="저장하기"
+            android:textColor="@color/white"
+            android:textSize="28dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
