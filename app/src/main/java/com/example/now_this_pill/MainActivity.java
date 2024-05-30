@@ -3,7 +3,9 @@ package com.example.now_this_pill;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import androidx.appcompat.widget.Toolbar;
 
@@ -13,14 +15,17 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.now_this_pill.Fragment.CalendarFragment;
-import com.example.now_this_pill.Fragment.HomeFragment;
+import com.example.now_this_pill.Fragment.HomeActivity;
 import com.example.now_this_pill.Fragment.ScheduleFragment;
 import com.example.now_this_pill.Fragment.SettingFragment;
 import com.example.now_this_pill.home.PillEatFragment;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 public class MainActivity extends AppCompatActivity {
-
+    private static final String TAG = "MainActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,11 +34,31 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setBottomNavigationView();
 
-        // 앱 초기 실행 시 홈화면으로 설정
+        // 앱 초기 실행 시 EatPillFragment로 설정
         if (savedInstanceState == null) {
-            // 홈 화면 프래그먼트로 전환
-            getSupportFragmentManager().beginTransaction().replace(R.id.main_container, new HomeFragment()).commit();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.main_container, new PillEatFragment())
+                    .commit();
         }
+
+        // FCM 토큰 가져오기
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete( Task<String> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w(TAG, "Fetching FCM registration token failed", task.getException());
+                            return;
+                        }
+
+                        // Get new FCM registration token
+                        String token = task.getResult();
+                        Log.d(TAG, "FCM Token: " + token);
+
+                        // 서버로 토큰 전송
+                        sendTokenToServer(token);
+                    }
+                });
     }
     // 하단 네비게이션뷰 설정
     private void setBottomNavigationView() {
@@ -120,5 +145,11 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setVisibility(View.GONE);
     }
 
-
+    // 서버에 FCM 토큰을 전송하는 메서드 (실제 서버 URL 및 로직에 맞게 구현)
+    private void sendTokenToServer(String token) {
+        // 서버에 FCM 토큰을 전송하는 로직을 구현합니다.
+        // 예: HttpURLConnection을 사용하여 서버에 POST 요청 보내기
+        // 여기서는 예시로 간단하게 로그 출력만 합니다.
+        Log.d(TAG, "FCM 토큰을 서버에 전송: " + token);
+    }
 }

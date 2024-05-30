@@ -68,7 +68,7 @@ public class PillEatFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // Fragment로 이동
-                moveToFragment(new pill_periodFragment(), "2번통");
+                moveToFragment(new pill_period_2_Fragment(), "2번통");
             }
         });
 
@@ -145,7 +145,7 @@ public class PillEatFragment extends Fragment {
                     });
 
             // 봉지약 데이터 로드
-            databaseRef.child("FirebaseEmailAccount").child("userAccount").child(userId).child("pill_schedule_packet")
+            databaseRef.child("FirebaseEmailAccount").child("userAccount").child(userId).child("pill_schedule_3")
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {

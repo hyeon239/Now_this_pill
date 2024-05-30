@@ -14,10 +14,16 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.now_this_pill.Fragment.HomeActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -46,8 +52,8 @@ public class LoginActivity extends AppCompatActivity {
         et_pwd = findViewById(R.id.et_pwd);
 
         // 임시로 아이디와 비밀번호 설정
-        et_email.setText("x@naver.com");
-        et_pwd.setText("xxxxxx");
+        et_email.setText("ets@naver.com");
+        et_pwd.setText("ets1234");
 
 
         btn_login = findViewById(R.id.btn_login);
@@ -61,15 +67,44 @@ public class LoginActivity extends AppCompatActivity {
                 mFirebaseAuth.signInWithEmailAndPassword(strEmail, strPwd).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(Task<AuthResult> task) {
-                        if(task.isSuccessful()) {
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            startActivity(intent);
-                            finish();
+                        if (task.isSuccessful()) {
+                            // 로그인 성공 시 현재 유저 ID를 가져옴
+                            String userId = mFirebaseAuth.getCurrentUser().getUid();
+                            checkConnectNodeAndNavigate(userId);
                         } else {
                             Toast.makeText(LoginActivity.this, "로그인 실패", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
+            }
+        });
+    }
+
+    private void checkConnectNodeAndNavigate(String userId) {
+        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference()
+                .child("FirebaseEmailAccount")
+                .child("userAccount")
+                .child(userId);
+
+        databaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Intent intent;
+                if (dataSnapshot.hasChild("connect")) {
+                    // "connect" 자식이 존재하면 MainActivity로 이동
+                    intent = new Intent(LoginActivity.this, MainActivity.class);
+                } else {
+                    // "connect" 자식이 존재하지 않으면 HomeActivity로 이동
+                    intent = new Intent(LoginActivity.this, HomeActivity.class);
+                }
+                startActivity(intent);
+                finish(); // 현재 액티비티 종료
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // 데이터베이스 에러 처리
+                Toast.makeText(LoginActivity.this, "데이터베이스 에러: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

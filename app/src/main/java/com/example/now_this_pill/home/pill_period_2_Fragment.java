@@ -34,9 +34,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-public class pill_packet_periodFragment extends Fragment {
+public class pill_period_2_Fragment extends Fragment {
 
-
+    private Spinner pillQuantitySpinner;
     private Spinner pillFrequencySpinner;
     private LinearLayout layout1, layout2, layout3, layout4, layout5;
     private Button[] weekdayButtons;
@@ -58,7 +58,7 @@ public class pill_packet_periodFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_pill_packet_period, container, false);
+        View view = inflater.inflate(R.layout.fragment_pill_period, container, false);
 
         // Firebase 인증 객체 초기화
         mAuth = FirebaseAuth.getInstance();
@@ -68,6 +68,7 @@ public class pill_packet_periodFragment extends Fragment {
         memoEditText = view.findViewById(R.id.memo_border);
 
         // Initialize views
+        pillQuantitySpinner = view.findViewById(R.id.pillQuantitySpinner);
         pillFrequencySpinner = view.findViewById(R.id.pillFrequencySpinner);
         layout1 = view.findViewById(R.id.layout1);
         layout2 = view.findViewById(R.id.layout2);
@@ -96,6 +97,7 @@ public class pill_packet_periodFragment extends Fragment {
         ArrayAdapter<CharSequence> quantityAdapter = ArrayAdapter.createFromResource(requireContext(),
                 R.array.pill_quantities, android.R.layout.simple_spinner_item);
         quantityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        pillQuantitySpinner.setAdapter(quantityAdapter);
 
         ArrayAdapter<CharSequence> frequencyAdapter = ArrayAdapter.createFromResource(requireContext(),
                 R.array.pill_frequencies, android.R.layout.simple_spinner_item);
@@ -103,6 +105,17 @@ public class pill_packet_periodFragment extends Fragment {
         pillFrequencySpinner.setAdapter(frequencyAdapter);
 
         // Set up spinner item selection listeners
+        pillQuantitySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Do nothing
+            }
+        });
 
         pillFrequencySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -150,6 +163,7 @@ public class pill_packet_periodFragment extends Fragment {
         //저장된 DB 불러오는 함수
         loadPillName();
         loadPillSchedule();
+        loadPillQuantity();
         loadPillFrequency();
         loadMemo();
         return view;
@@ -157,42 +171,40 @@ public class pill_packet_periodFragment extends Fragment {
 
     private void savePillSchedule() {
         // Retrieve pill schedule data
-        String pillName = editText_1.getText().toString(); // 사용자가 입력한 약 이름
-        int pillFrequency = pillFrequencySpinner.getSelectedItemPosition() + 1; // Adjusted frequency value
-        String memo = ((EditText) getView().findViewById(R.id.memo_border)).getText().toString(); // 메모 입력
+        String pillName = editText_1.getText().toString();
+        int pillCount = Integer.parseInt(pillQuantitySpinner.getSelectedItem().toString());
+        int pillFrequency = pillFrequencySpinner.getSelectedItemPosition() + 1;
+        String memo = ((EditText) getView().findViewById(R.id.memo_border)).getText().toString();
 
-        // Create a new PillSchedule object
-        UserAccount.PillSchedule3 pillSchedule3 = new UserAccount.PillSchedule3(
-                pillName, "", pillFrequency,
+        UserAccount.PillSchedule2 pillSchedule2 = new UserAccount.PillSchedule2(
+                pillName, "", pillCount, pillFrequency,
                 getTimeFromTimePicker(timePickers[0]), getTimeFromTimePicker(timePickers[1]), getTimeFromTimePicker(timePickers[2]), getTimeFromTimePicker(timePickers[3]), getTimeFromTimePicker(timePickers[4]),
-                memo // 메모 추가
+                memo
         );
 
-        // Write the new PillSchedule object to the database
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             String userId = currentUser.getUid();
-            DatabaseReference userRef = databaseRef.child("FirebaseEmailAccount").child("userAccount").child(userId).child("pill_schedule_3");
+            DatabaseReference userRef = databaseRef.child("FirebaseEmailAccount").child("userAccount").child(userId).child("pill_schedule_2");
 
-            // Remove previous schedule times
             userRef.child("times").removeValue();
 
-            // Save only selected times
             for (int i = 0; i < pillFrequency; i++) {
                 String time = getTimeFromTimePicker(timePickers[i]);
                 userRef.child("times").child("time" + (i + 1)).setValue(time);
             }
 
-            // Save other pill schedule data
             userRef.child("pillName").setValue(pillName);
+            userRef.child("pillCount").setValue(pillCount);
             userRef.child("pillFrequency").setValue(pillFrequency);
             userRef.child("memo").setValue(memo);
-            String pillDay = getSelectedWeekdays(); // 선택된 요일 정보 가져오기
-            userRef.child("weekdays").setValue(pillDay); // 요일 정보를 저장
+            String pillDay = getSelectedWeekdays();
+            userRef.child("weekdays").setValue(pillDay);
         } else {
             Toast.makeText(requireContext(), "로그인된 사용자를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
         }
     }
+
 
 
 
@@ -354,12 +366,13 @@ public class pill_packet_periodFragment extends Fragment {
         return timeString;
     }
 
+
     //알약 이름 DB 불러오기
     private void loadPillName() {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             String userId = currentUser.getUid();
-            databaseRef.child("FirebaseEmailAccount").child("userAccount").child(userId).child("pill_schedule_3")
+            databaseRef.child("FirebaseEmailAccount").child("userAccount").child(userId).child("pill_schedule_2")
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -385,57 +398,57 @@ public class pill_packet_periodFragment extends Fragment {
             Toast.makeText(requireContext(), "로그인된 사용자를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
         }
     }
-    //복용 요일 DB 불러오기
+//복용 요일 DB 불러오기
 // loadPillSchedule() 함수 내부에서 loadPillScheduleTimes() 함수 호출 시 데이터 스냅샷 전달
-    private void loadPillSchedule() {
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            String userId = currentUser.getUid();
-            databaseRef.child("FirebaseEmailAccount").child("userAccount").child(userId).child("pill_schedule_3")
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.exists()) {
-                                // Load pill name
-                                String pillName = dataSnapshot.child("pillName").getValue(String.class);
-                                if (pillName != null && !pillName.isEmpty()) {
-                                    editText_1.setText(pillName);
-                                    btn_store_2.setText("수정하기");
-                                } else {
-                                    editText_1.setHint("약 이름을 입력하세요");
-                                }
-
-                                // Load pill days
-                                String weekdays = dataSnapshot.child("weekdays").getValue(String.class);
-                                if (weekdays != null && !weekdays.isEmpty()) {
-                                    setSelectedWeekdays(weekdays);
-                                }
-
-                                // Load pill frequency
-                                int pillFrequency = dataSnapshot.child("pillFrequency").getValue(Integer.class);
-                                if (pillFrequency != 0) {
-                                    // Find the position of pill frequency in the array
-                                    int position = pillFrequency - 1; // Adjusted position
-                                    pillFrequencySpinner.setSelection(position);
-                                    updateLayoutVisibility(position); // Update layout visibility based on pill frequency
-
-                                    // Call loadPillScheduleTimes() and pass the DataSnapshot and pillFrequency
-                                    loadPillScheduleTimes(dataSnapshot, pillFrequency);
-                                }
+private void loadPillSchedule() {
+    FirebaseUser currentUser = mAuth.getCurrentUser();
+    if (currentUser != null) {
+        String userId = currentUser.getUid();
+        databaseRef.child("FirebaseEmailAccount").child("userAccount").child(userId).child("pill_schedule_2")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            // Load pill name
+                            String pillName = dataSnapshot.child("pillName").getValue(String.class);
+                            if (pillName != null && !pillName.isEmpty()) {
+                                editText_1.setText(pillName);
+                                btn_store_2.setText("수정하기");
                             } else {
                                 editText_1.setHint("약 이름을 입력하세요");
                             }
-                        }
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                            Toast.makeText(requireContext(), "데이터를 불러오는 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                            // Load pill days
+                            String weekdays = dataSnapshot.child("weekdays").getValue(String.class);
+                            if (weekdays != null && !weekdays.isEmpty()) {
+                                setSelectedWeekdays(weekdays);
+                            }
+
+                            // Load pill frequency
+                            int pillFrequency = dataSnapshot.child("pillFrequency").getValue(Integer.class);
+                            if (pillFrequency != 0) {
+                                // Find the position of pill frequency in the array
+                                int position = pillFrequency - 1; // Adjusted position
+                                pillFrequencySpinner.setSelection(position);
+                                updateLayoutVisibility(position); // Update layout visibility based on pill frequency
+
+                                // Call loadPillScheduleTimes() and pass the DataSnapshot and pillFrequency
+                                loadPillScheduleTimes(dataSnapshot, pillFrequency);
+                            }
+                        } else {
+                            editText_1.setHint("약 이름을 입력하세요");
                         }
-                    });
-        } else {
-            Toast.makeText(requireContext(), "로그인된 사용자를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
-        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Toast.makeText(requireContext(), "데이터를 불러오는 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    } else {
+        Toast.makeText(requireContext(), "로그인된 사용자를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
     }
+}
 
 
     private void setSelectedWeekdays(String weekdays) {
@@ -452,13 +465,41 @@ public class pill_packet_periodFragment extends Fragment {
     }
 
 
+    private void loadPillQuantity() {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            String userId = currentUser.getUid();
+            databaseRef.child("FirebaseEmailAccount").child("userAccount").child(userId).child("pill_schedule_2")
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()) {
+                                // Load pill quantity
+                                int pillQuantity = dataSnapshot.child("pillCount").getValue(Integer.class);
+                                if (pillQuantity != 0) {
+                                    // Find the position of pill quantity in the array
+                                    int position = Arrays.asList(getResources().getStringArray(R.array.pill_quantities)).indexOf(String.valueOf(pillQuantity));
+                                    pillQuantitySpinner.setSelection(position);
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            Toast.makeText(requireContext(), "데이터를 불러오는 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        } else {
+            Toast.makeText(requireContext(), "로그인된 사용자를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
+        }
+    }
 
     //하루에 몇 번 복용하는지 DB 불러오기
     private void loadPillFrequency() {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             String userId = currentUser.getUid();
-            databaseRef.child("FirebaseEmailAccount").child("userAccount").child(userId).child("pill_schedule_3")
+            databaseRef.child("FirebaseEmailAccount").child("userAccount").child(userId).child("pill_schedule_2")
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -530,32 +571,32 @@ public class pill_packet_periodFragment extends Fragment {
 
     //메모 dB
 // 메모 DB 불러오기
-    private void loadMemo() {
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            String userId = currentUser.getUid();
-            databaseRef.child("FirebaseEmailAccount").child("userAccount").child(userId).child("pill_schedule_3")
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.exists()) {
-                                String memo = dataSnapshot.child("memo").getValue(String.class);
-                                if (memo != null && !memo.isEmpty()) {
-                                    // 데이터베이스에서 가져온 메모를 EditText에 설정
-                                    memoEditText.setText(memo);
-                                }
+private void loadMemo() {
+    FirebaseUser currentUser = mAuth.getCurrentUser();
+    if (currentUser != null) {
+        String userId = currentUser.getUid();
+        databaseRef.child("FirebaseEmailAccount").child("userAccount").child(userId).child("pill_schedule_2")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            String memo = dataSnapshot.child("memo").getValue(String.class);
+                            if (memo != null && !memo.isEmpty()) {
+                                // 데이터베이스에서 가져온 메모를 EditText에 설정
+                                memoEditText.setText(memo);
                             }
                         }
+                    }
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                            Toast.makeText(requireContext(), "데이터를 불러오는 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        } else {
-            Toast.makeText(requireContext(), "로그인된 사용자를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
-        }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Toast.makeText(requireContext(), "데이터를 불러오는 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    } else {
+        Toast.makeText(requireContext(), "로그인된 사용자를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
     }
+}
 
 
 }

@@ -110,31 +110,24 @@ public class UserAccount {
         private String weekdays;    // 복용 요일
         private int pillCount;      // 한 번에 복용하는 알약 수
         private int pillFrequency;  // 하루에 몇 번 복용하는지
-        private int hour1, minute1; // 1번 시간
-        private int hour2, minute2; // 2번 시간
-        private int hour3, minute3; // 3번 시간
-        private int hour4, minute4; // 4번 시간
-        private int hour5, minute5; // 5번 시간
+        private String time1;
+        private String time2;
+        private String time3;
+        private String time4;
+        private String time5;
         private String memo;        // 메모
 
-        public PillSchedule1(String pillName, String weekdays, int pillCount, int pillFrequency,
-                             int hour1, int minute1, int hour2, int minute2,
-                             int hour3, int minute3, int hour4, int minute4,
-                             int hour5, int minute5, String memo) {
+        public PillSchedule1(String pillName, String weekdays, int pillCount, int pillFrequency, String time1, String time2, String time3, String time4, String time5, String memo) {
+
             this.pillName = pillName;
             this.weekdays = weekdays;
             this.pillCount = pillCount;
             this.pillFrequency = pillFrequency;
-            this.hour1 = hour1;
-            this.minute1 = minute1;
-            this.hour2 = hour2;
-            this.minute2 = minute2;
-            this.hour3 = hour3;
-            this.minute3 = minute3;
-            this.hour4 = hour4;
-            this.minute4 = minute4;
-            this.hour5 = hour5;
-            this.minute5 = minute5;
+            this.time1 = time1;
+            this.time2 = time2;
+            this.time3 = time3;
+            this.time4 = time4;
+            this.time5 = time5;
             this.memo = memo;
         }
 
@@ -143,7 +136,6 @@ public class UserAccount {
         public void setPillName(String pillName) { this.pillName = pillName; }
 
         public String getPillDay() { return weekdays; }
-        public void setPillDay(String pillDay) { this.weekdays = pillDay; }
 
         public int getPillCount() { return pillCount; }
         public void setPillCount(int pillCount) { this.pillCount = pillCount; }
@@ -151,46 +143,137 @@ public class UserAccount {
         public int getPillFrequency() { return pillFrequency; }
         public void setPillFrequency(int pillFrequency) { this.pillFrequency = pillFrequency; }
 
-        public int getHour1() { return hour1; }
-        public void setHour1(int hour1) { this.hour1 = hour1; }
+        public String getTime1() {
+            return time1;
+        }
+        public String getTime2() {
+            return time2;
+        }
+        public String getTime3() {
+            return time3;
+        }
+        public String getTime4() {
+            return time4;
+        }
+        public String getTime5() {
+            return time5;
+        }
 
-        public int getMinute1() { return minute1; }
-        public void setMinute1(int minute1) { this.minute1 = minute1; }
-
-        public int getHour2() { return hour2; }
-        public void setHour2(int hour2) { this.hour2 = hour2; }
-
-        public int getMinute2() { return minute2; }
-        public void setMinute2(int minute2) { this.minute2 = minute2; }
-
-        public int getHour3() { return hour3; }
-        public void setHour3(int hour3) { this.hour3 = hour3; }
-
-        public int getMinute3() { return minute3; }
-        public void setMinute3(int minute3) { this.minute3 = minute3; }
-
-        public int getHour4() { return hour4; }
-        public void setHour4(int hour4) { this.hour4 = hour4; }
-
-        public int getMinute4() { return minute4; }
-        public void setMinute4(int minute4) { this.minute4 = minute4; }
-
-        public int getHour5() { return hour5; }
-        public void setHour5(int hour5) { this.hour5 = hour5; }
-
-        public int getMinute5() { return minute5; }
-        public void setMinute5(int minute5) { this.minute5 = minute5; }
 
         public String getMemo() { return memo; }
         public void setMemo(String memo) { this.memo = memo; }
     }
-    public class PillSchedule2 {
-        // PillSchedule1 클래스와 동일한 구조를 가지고 있음
-        // 필요한 경우 수정 가능
+    public static class PillSchedule2 {
+        private String pillName;    // 알약 이름
+        private String weekdays;    // 복용 요일
+        private int pillCount;      // 한 번에 복용하는 알약 수
+        private int pillFrequency;  // 하루에 몇 번 복용하는지
+        private String time1;
+        private String time2;
+        private String time3;
+        private String time4;
+        private String time5;
+        private String memo;        // 메모
+
+        public PillSchedule2(String pillName, String weekdays, int pillCount, int pillFrequency, String time1, String time2, String time3, String time4, String time5, String memo) {
+
+            this.pillName = pillName;
+            this.weekdays = weekdays;
+            this.pillCount = pillCount;
+            this.pillFrequency = pillFrequency;
+            this.time1 = time1;
+            this.time2 = time2;
+            this.time3 = time3;
+            this.time4 = time4;
+            this.time5 = time5;
+            this.memo = memo;
+        }
+
+        // Getters and Setters
+        public String getPillName() { return pillName; }
+        public void setPillName(String pillName) { this.pillName = pillName; }
+
+        public String getPillDay() { return weekdays; }
+
+        public int getPillCount() { return pillCount; }
+        public void setPillCount(int pillCount) { this.pillCount = pillCount; }
+
+        public int getPillFrequency() { return pillFrequency; }
+        public void setPillFrequency(int pillFrequency) { this.pillFrequency = pillFrequency; }
+
+        public String getTime1() {
+            return time1;
+        }
+        public String getTime2() {
+            return time2;
+        }
+        public String getTime3() {
+            return time3;
+        }
+        public String getTime4() {
+            return time4;
+        }
+        public String getTime5() {
+            return time5;
+        }
+
+
+        public String getMemo() { return memo; }
+        public void setMemo(String memo) { this.memo = memo; }
     }
 
-    public class PillSchedule3 {
-        // PillSchedule1 클래스와 동일한 구조를 가지고 있음
-        // 필요한 경우 수정 가능
+    public static class PillSchedule3 {
+        private String pillName;    // 알약 이름
+        private String weekdays;    // 복용 요일
+        private int pillFrequency;  // 하루에 몇 번 복용하는지
+        private String time1;
+        private String time2;
+        private String time3;
+        private String time4;
+        private String time5;
+        private String memo;        // 메모
+
+        public PillSchedule3(String pillName, String weekdays, int pillFrequency, String time1, String time2, String time3, String time4, String time5, String memo) {
+
+            this.pillName = pillName;
+            this.weekdays = weekdays;
+            this.pillFrequency = pillFrequency;
+            this.time1 = time1;
+            this.time2 = time2;
+            this.time3 = time3;
+            this.time4 = time4;
+            this.time5 = time5;
+            this.memo = memo;
+        }
+
+        // Getters and Setters
+        public String getPillName() { return pillName; }
+        public void setPillName(String pillName) { this.pillName = pillName; }
+
+        public String getPillDay() { return weekdays; }
+
+        public int getPillFrequency() { return pillFrequency; }
+        public void setPillFrequency(int pillFrequency) { this.pillFrequency = pillFrequency; }
+
+        public String getTime1() {
+            return time1;
+        }
+        public String getTime2() {
+            return time2;
+        }
+        public String getTime3() {
+            return time3;
+        }
+        public String getTime4() {
+            return time4;
+        }
+        public String getTime5() {
+            return time5;
+        }
+
+
+        public String getMemo() { return memo; }
+        public void setMemo(String memo) { this.memo = memo; }
     }
+
 }
