@@ -3,6 +3,9 @@ package com.example.now_this_pill;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.example.now_this_pill.Alarm.AlarmReceiver;
 import com.example.now_this_pill.Fragment.CalendarFragment;
 import com.example.now_this_pill.Fragment.HomeActivity;
 import com.example.now_this_pill.Fragment.ScheduleFragment;
@@ -24,12 +28,23 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+
+import android.content.Context;
+
+import java.util.Calendar;
+
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
+    private Context context;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        scheduleWeeklyAlarm(this);
+
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setBottomNavigationView();
@@ -60,6 +75,25 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
+
+
+    public static void scheduleWeeklyAlarm(Context context) {
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+
+        //////시간 설정
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+        calendar.set(Calendar.HOUR_OF_DAY, 01);  // 20시 -> 21시로 수정
+        calendar.set(Calendar.MINUTE, 59);         // 20분 -> 0분으로 수정
+        calendar.set(Calendar.SECOND, 0);
+
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                AlarmManager.INTERVAL_DAY * 7, pendingIntent);
+    }
+
     // 하단 네비게이션뷰 설정
     private void setBottomNavigationView() {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_view);
