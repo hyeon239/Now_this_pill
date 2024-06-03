@@ -17,6 +17,7 @@ import com.example.now_this_pill.R;
 public class NotificationService extends JobIntentService {
     private static final String CHANNEL_ID = "PillReminderChannel";
     private static final int JOB_ID = 1;
+    private static int lastNotificationId = 0;
 
     public static void enqueueWork(Context context, Intent work) {
         enqueueWork(context, NotificationService.class, JOB_ID, work);
@@ -47,8 +48,14 @@ public class NotificationService extends JobIntentService {
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
+        // 이전 알림을 취소
+        if (lastNotificationId != 0) {
+            notificationManager.cancel(lastNotificationId);
+        }
+
         // 고유한 ID 생성 (예: 현재 시간을 밀리초 단위로 사용)
         int notificationId = (int) System.currentTimeMillis();
+        lastNotificationId = notificationId;
 
         notificationManager.notify(notificationId, notificationBuilder.build());
     }
