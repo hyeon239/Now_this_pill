@@ -1,5 +1,10 @@
 package com.example.now_this_pill.Fragment;
 
+
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -10,7 +15,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CalendarView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.example.now_this_pill.Alarm.AlarmReceiver;
 
 import com.example.now_this_pill.PillScheduleAdapter;
 import com.example.now_this_pill.R;
@@ -36,6 +44,7 @@ public class CalendarFragment extends Fragment {
     private FirebaseAuth mAuth;
     private DatabaseReference databaseRef;
     private static final String TAG = "CalendarFragment";
+    private ProgressBar loadingProgressBar; // 프로그레스 바 선언
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,6 +61,8 @@ public class CalendarFragment extends Fragment {
         todayTextView = view.findViewById(R.id.today);
         scheduleTextView = view.findViewById(R.id.pill_eat);
         calendarView = view.findViewById(R.id.calendar_view);
+        loadingProgressBar = view.findViewById(R.id.loadingProgressBar); // 프로그레스 바 초기화
+
 
         // 현재 날짜 가져오기
         Calendar currentCalendar = Calendar.getInstance();
@@ -106,6 +117,9 @@ public class CalendarFragment extends Fragment {
     }
 
     private void loadScheduleForDate(String date) {
+        // 데이터 로딩 시작 시 프로그레스 바 표시
+        loadingProgressBar.setVisibility(View.VISIBLE);
+
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             String userId = currentUser.getUid();
@@ -125,6 +139,10 @@ public class CalendarFragment extends Fragment {
                         }
                     }
                     displaySchedule(scheduleList);
+                    scheduleNotifications(scheduleList);  // 알림 스케줄링
+
+                    // 데이터 로딩 완료 후 프로그레스 바 숨김
+                    loadingProgressBar.setVisibility(View.GONE);
                 }
 
                 @Override
@@ -132,12 +150,19 @@ public class CalendarFragment extends Fragment {
                     // 오류 처리 로그 추가
                     Log.e(TAG, "Database error: " + databaseError.getMessage());
                     scheduleTextView.setText("데이터를 불러오는 중 오류가 발생했습니다.");
+
+                    // 데이터 로딩 실패 시에도 프로그레스 바 숨김
+                    loadingProgressBar.setVisibility(View.GONE);
                 }
             });
         } else {
             scheduleTextView.setText("로그인 상태를 확인해 주세요.");
+
+            // 데이터 로딩 실패 시에도 프로그레스 바 숨김
+            loadingProgressBar.setVisibility(View.GONE);
         }
     }
+
 
     private void displaySchedule(List<String> scheduleList) {
         if (scheduleList.isEmpty()) {
@@ -150,4 +175,49 @@ public class CalendarFragment extends Fragment {
             scheduleTextView.setText(schedules.toString());
         }
     }
+    // 추가된 코드 시작
+    private void scheduleNotifications(List<String> scheduleList) {
+        if (!scheduleList.isEmpty()) {
+            for (String schedule : scheduleList) {
+                String[] parts = schedule.split(" "); // assuming format "오전/오후 HH:mm 약이름"
+                if (parts.length == 3) {
+                    String amPm = parts[0];
+                    String time = parts[1];
+                    String pillName = parts[2];
+                    String[] timeParts = time.split(":");
+                    if (timeParts.length == 2) {
+                        int hour = Integer.parseInt(timeParts[0]);
+                        int minute = Integer.parseInt(timeParts[1]);
+
+                        if (amPm.equals("오후") && hour != 12) {
+                            hour += 12;
+                        } else if (amPm.equals("오전") && hour == 12) {
+                            hour = 0;
+                        }
+
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.set(Calendar.HOUR_OF_DAY, hour);
+                        calendar.set(Calendar.MINUTE, minute);
+                        calendar.set(Calendar.SECOND, 0);
+
+                        scheduleNotification(calendar.getTimeInMillis(), pillName);
+                    }
+                }
+            }
+        }
+    }
+
+
+    private void scheduleNotification(long timeInMillis, String pillName) {
+        Intent intent = new Intent(getContext(), AlarmReceiver.class);
+        intent.putExtra("pillName", pillName);
+        int requestCode = pillName.hashCode(); // 고유한 requestCode 설정
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
+        if (alarmManager != null) {
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
+        }
+    }
+    // 추가된 코드 끝
 }

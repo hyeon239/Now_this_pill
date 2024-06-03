@@ -40,6 +40,10 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        // 화면 전환 애니메이션 설정
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+
+
         btn_register_1 = findViewById(R.id.btn_register_1);
         btn_register_1.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
@@ -52,8 +56,8 @@ public class LoginActivity extends AppCompatActivity {
         et_pwd = findViewById(R.id.et_pwd);
 
         // 임시로 아이디와 비밀번호 설정
-        et_email.setText("al@naver.com");
-        et_pwd.setText("al1234");
+        et_email.setText("ets@naver.com");
+        et_pwd.setText("ets1234");
 
 
         btn_login = findViewById(R.id.btn_login);
@@ -63,7 +67,9 @@ public class LoginActivity extends AppCompatActivity {
 
             if (strEmail.isEmpty() || strPwd.isEmpty()) {
                 Toast.makeText(LoginActivity.this, "이메일과 비밀번호를 입력해주세요", Toast.LENGTH_SHORT).show();
-            } else {
+            } else {// 로그인 중입니다... 메시지 표시
+                Toast.makeText(LoginActivity.this, "로그인 중입니다...", Toast.LENGTH_SHORT).show();
+
                 mFirebaseAuth.signInWithEmailAndPassword(strEmail, strPwd).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(Task<AuthResult> task) {

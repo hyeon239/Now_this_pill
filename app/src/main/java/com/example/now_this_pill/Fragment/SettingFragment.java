@@ -6,10 +6,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
+import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,10 +16,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.example.now_this_pill.LoginActivity;
 import com.example.now_this_pill.R;
-import com.example.now_this_pill.Setting.InquiryActivity;
-import com.example.now_this_pill.Setting.VersionActivity;
+import com.example.now_this_pill.Setting.InquiryFragment;
+import com.example.now_this_pill.Setting.VersionFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -28,19 +31,27 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import android.os.Handler;
+import android.os.Looper;
 
 public class SettingFragment extends Fragment {
 
-
-
     private TextView textEmail, textName;
+    private int deleteButtonClickCount = 0;
+    private Handler handler = new Handler(Looper.getMainLooper());
+    private Runnable resetDeleteButtonClickCountRunnable = new Runnable() {
+
+        public void run() {
+            deleteButtonClickCount = 0;
+        }
+    };
 
     // Menu items
     private String[] menuItems = {"로그아웃", "문의하기", "버전정보", "계정삭제"};
 
+    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_setting, container, false);
 
@@ -74,7 +85,6 @@ public class SettingFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     handleMenuItemClick(position);
-
                 }
             });
             settingLayout.addView(menuItemView);
@@ -116,21 +126,41 @@ public class SettingFragment extends Fragment {
                 Intent intent = new Intent(getContext(), LoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
+                getActivity().finish(); // 현재 액티비티 종료
                 break;
             case 1:
                 // 문의하기 처리
-                Intent inquiryIntent = new Intent(getContext(), InquiryActivity.class);
-                startActivity(inquiryIntent);
+                replaceFragment(new InquiryFragment());
                 break;
             case 2:
                 // 버전 정보 화면으로 이동
-                Intent versionIntent = new Intent(getContext(), VersionActivity.class);
-                startActivity(versionIntent);
+                replaceFragment(new VersionFragment());
                 break;
             case 3:
                 // 계정삭제 처리
-                deleteAccount();
+                handleDeleteAccount();
                 break;
+        }
+    }
+
+    // 프래그먼트를 교체하는 메서드
+    private void replaceFragment(Fragment fragment) {
+        requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.main_container, fragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    // 계정 삭제 버튼 클릭 핸들링
+    private void handleDeleteAccount() {
+        deleteButtonClickCount++;
+        handler.removeCallbacks(resetDeleteButtonClickCountRunnable);
+        handler.postDelayed(resetDeleteButtonClickCountRunnable, 5000); // 5초 후에 카운트 초기화
+
+        if (deleteButtonClickCount < 5) {
+            Toast.makeText(requireContext(), "정말 삭제하시겠습니까? 해당 버튼을 5회 누르시면 삭제됩니다 (" + deleteButtonClickCount + "/5)", Toast.LENGTH_SHORT).show();
+        } else {
+            deleteAccount();
         }
     }
 
@@ -142,19 +172,19 @@ public class SettingFragment extends Fragment {
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             // 계정 삭제 성공
-                            Toast.makeText(getContext(), "계정이 성공적으로 삭제되었습니다.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(requireContext(), "계정이 성공적으로 삭제되었습니다.", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(getContext(), LoginActivity.class);
                             startActivity(intent);
 
                             // 필요한 추가 작업 수행
                         } else {
                             // 계정 삭제 실패
-                            Toast.makeText(getContext(), "계정 삭제에 실패했습니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(requireContext(), "계정 삭제에 실패했습니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                         }
                     });
         } else {
             // 사용자가 로그인되어 있지 않음을 사용자에게 알림
-            Toast.makeText(getContext(), "로그인이 필요한 기능입니다.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "로그인이 필요한 기능입니다.", Toast.LENGTH_SHORT).show();
             // 로그인 화면으로 이동
             Intent loginIntent = new Intent(getContext(), LoginActivity.class);
             loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK); // 기존의 스택 내용 제거 후 새로운 액티비티 시작

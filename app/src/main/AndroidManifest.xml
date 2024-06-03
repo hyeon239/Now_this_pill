@@ -73,17 +73,13 @@
         </activity>
 
 
-        <service android:name=".Alarm.MyFirebaseMessagingService" android:exported="false">
+        <service android:name=".Alarm.NotificationService" android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
-        <receiver android:name=".Alarm.BootReceiver" android:enabled="true" android:exported="false">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
+
 
         <receiver android:name=".Alarm.AlarmReceiver" android:exported="false" />
 

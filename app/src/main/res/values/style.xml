@@ -12,7 +12,17 @@
         <!--
         <item name="android:windowBackground">@drawable/splash_background</item>
         -->
-</style>
+
+        <item name="android:windowAnimationStyle">@style/ActivityAnimation</item>
+
+    </style>
+
+    <style name="ActivityAnimation">
+        <item name="android:activityOpenEnterAnimation">@anim/fade_in</item>
+        <item name="android:activityOpenExitAnimation">@anim/fade_out</item>
+        <item name="android:activityCloseEnterAnimation">@anim/fade_in</item>
+        <item name="android:activityCloseExitAnimation">@anim/fade_out</item>
+    </style>
 
 
 </resources>

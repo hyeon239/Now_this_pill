@@ -8,9 +8,11 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.MenuItem;
 import androidx.appcompat.widget.Toolbar;
+import com.google.firebase.database.DatabaseReference;
 
 import android.view.View;
 import android.widget.ImageButton;
@@ -26,24 +28,31 @@ import com.example.now_this_pill.home.PillEatFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 
 import android.content.Context;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private Context context;
+    private DataSnapshot databaseRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-        scheduleWeeklyAlarm(this);
+        // 화면 전환 애니메이션 설정
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -76,23 +85,6 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-
-    public static void scheduleWeeklyAlarm(Context context) {
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, AlarmReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-
-        //////시간 설정
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
-        calendar.set(Calendar.HOUR_OF_DAY, 01);  // 20시 -> 21시로 수정
-        calendar.set(Calendar.MINUTE, 59);         // 20분 -> 0분으로 수정
-        calendar.set(Calendar.SECOND, 0);
-
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                AlarmManager.INTERVAL_DAY * 7, pendingIntent);
-    }
 
     // 하단 네비게이션뷰 설정
     private void setBottomNavigationView() {

@@ -1,14 +1,17 @@
 package com.example.now_this_pill.Fragment;
 
+
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,7 +33,11 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
+
+import android.os.Handler;
 
 
 public class ScheduleFragment extends Fragment {
@@ -41,6 +48,8 @@ public class ScheduleFragment extends Fragment {
     private FirebaseAuth mAuth;
     private DatabaseReference databaseRef;
     private TextView noPillsTextView;
+    private ProgressBar loadingProgressBar; // 로딩 프로그레스 바 추가
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -51,6 +60,8 @@ public class ScheduleFragment extends Fragment {
         noPillsTextView = view.findViewById(R.id.noPillsTextView);
         pillScheduleRecyclerView = view.findViewById(R.id.pill_schedule_recycler_view);
         pillScheduleRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        loadingProgressBar = view.findViewById(R.id.loadingProgressBar); // 로딩 프로그레스 바 초기화
+
 
         mAuth = FirebaseAuth.getInstance();
         databaseRef = FirebaseDatabase.getInstance().getReference();
@@ -72,19 +83,56 @@ public class ScheduleFragment extends Fragment {
 
         todayTextView.setText(todayDate);
 
+        // 로딩 프로그레스 바를 표시
+        loadingProgressBar.setVisibility(View.VISIBLE);
         loadPillSchedules(todayDay, todayDate);
 
         return view;
     }
 
+    Handler handler = new Handler();
     private void loadPillSchedules(String todayDay, String todayDate) {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             String userId = currentUser.getUid();
-            List<String> schedules = Arrays.asList("pill_schedule_1", "pill_schedule_2", "pill_schedule_3");
+            List<String> schedules = new ArrayList<>();
 
+            databaseRef.child("FirebaseEmailAccount").child("userAccount").child(userId)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()) {
+                                for (DataSnapshot scheduleSnapshot : dataSnapshot.getChildren()) {
+                                    if (scheduleSnapshot.getKey().startsWith("pill_schedule")) {
+                                        schedules.add(scheduleSnapshot.getKey());
+                                    }
+                                }
+                            }
+                            loadPillsFromSchedules(schedules, todayDay, todayDate);
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    loadingProgressBar.setVisibility(View.GONE);
+                                }
+                            }, 100);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            Toast.makeText(requireContext(), "데이터를 불러오는 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        } else {
+            Toast.makeText(requireContext(), "로그인된 사용자를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void loadPillsFromSchedules(List<String> schedules, String todayDay, String todayDate) {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            String userId = currentUser.getUid();
             List<String> timesAndNamesList = new ArrayList<>();
-            final int[] completedCount = {0}; // 완료된 콜백 수를 추적
+            final int[] completedCount = {0};
 
             for (String schedule : schedules) {
                 databaseRef.child("FirebaseEmailAccount").child("userAccount").child(userId).child(schedule)
@@ -107,7 +155,6 @@ public class ScheduleFragment extends Fragment {
 
                                 completedCount[0]++;
                                 if (completedCount[0] == schedules.size()) {
-                                    // 모든 스케줄을 다 조회한 후 시간과 알약 이름을 정렬하여 표시
                                     Collections.sort(timesAndNamesList, new Comparator<String>() {
                                         SimpleDateFormat timeFormat = new SimpleDateFormat("a hh:mm", Locale.getDefault());
 
@@ -123,7 +170,7 @@ public class ScheduleFragment extends Fragment {
                                     });
 
                                     if (!timesAndNamesList.isEmpty()) {
-                                        adapter = new PillScheduleAdapter(timesAndNamesList);
+                                        adapter = new PillScheduleAdapter(getContext(), timesAndNamesList);
                                         pillScheduleRecyclerView.setAdapter(adapter);
                                         saveScheduleToFirebase(timesAndNamesList, todayDate);
                                         noPillsTextView.setVisibility(View.GONE);
@@ -139,8 +186,6 @@ public class ScheduleFragment extends Fragment {
                             }
                         });
             }
-        } else {
-            Toast.makeText(requireContext(), "로그인된 사용자를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -150,9 +195,23 @@ public class ScheduleFragment extends Fragment {
             String userId = currentUser.getUid();
             DatabaseReference scheduleRef = databaseRef.child("FirebaseEmailAccount").child("userAccount").child(userId).child("schedule").child(todayDate);
 
-            for (int i = 0; i < scheduleList.size(); i++) {
-                scheduleRef.child("스케줄" + (i + 1)).setValue(scheduleList.get(i));
-            }
+            scheduleRef.runTransaction(new Transaction.Handler() {
+                @Override
+                public Transaction.Result doTransaction(MutableData mutableData) {
+                    mutableData.setValue(null);
+                    for (int i = 0; i < scheduleList.size(); i++) {
+                        mutableData.child("스케줄" + (i + 1)).setValue(scheduleList.get(i));
+                    }
+                    return Transaction.success(mutableData);
+                }
+
+                @Override
+                public void onComplete(DatabaseError databaseError, boolean committed, DataSnapshot dataSnapshot) {
+                    if (databaseError != null) {
+                        Log.e("ScheduleFragment", "DatabaseError: ", databaseError.toException());
+                    }
+                }
+            });
         }
     }
 }
