@@ -8,8 +8,8 @@
 
     <ImageView
         android:id="@+id/icon_nobackground"
-        android:layout_width="130dp"
-        android:layout_height="130dp"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
         android:layout_gravity="center"
         android:layout_marginTop="15dp"
         android:src="@drawable/icon_no_background"
@@ -59,6 +59,14 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="유저_이름"
+            android:textColor="@android:color/black"
+            android:textSize="18dp" />
+        <TextView
+            android:id="@+id/text_token"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="유저_6자리"
             android:textColor="@android:color/black"
             android:textSize="18dp" />
     </LinearLayout>

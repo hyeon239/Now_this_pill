@@ -11,12 +11,14 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CalendarView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.now_this_pill.Alarm.AlarmReceiver;
 
@@ -37,6 +39,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class CalendarFragment extends Fragment {
+    private long backPressedTime; // 뒤로 가기 버튼이 눌린 시간을 저장하기 위한 변수
 
     private TextView todayTextView;
     private TextView scheduleTextView;
@@ -200,7 +203,10 @@ public class CalendarFragment extends Fragment {
                         calendar.set(Calendar.MINUTE, minute);
                         calendar.set(Calendar.SECOND, 0);
 
-                        scheduleNotification(calendar.getTimeInMillis(), pillName);
+                        // 현재 시간보다 이전 시간에 대한 알람은 예약하지 않음
+                        if (calendar.getTimeInMillis() > System.currentTimeMillis()) {
+                            scheduleNotification(calendar.getTimeInMillis(), pillName);
+                        }
                     }
                 }
             }
@@ -220,4 +226,34 @@ public class CalendarFragment extends Fragment {
         }
     }
     // 추가된 코드 끝
+
+
+
+    @Override
+    public void onViewCreated( View view,  Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        view.setFocusableInTouchMode(true);
+        view.requestFocus();
+        view.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
+                    // 현재 시간
+                    long currentTime = System.currentTimeMillis();
+                    // 첫 번째로 뒤로 가기 버튼을 눌렀을 때
+                    if (backPressedTime + 2000 > currentTime) {
+                        // 앱 종료
+                        requireActivity().finish();
+                    } else {
+                        // 두 번째로 뒤로 가기 버튼을 눌렀을 때
+                        // 사용자에게 앱 종료 안내 메시지 표시
+                        Toast.makeText(requireContext(), "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show();
+                    }
+                    backPressedTime = currentTime;
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
 }

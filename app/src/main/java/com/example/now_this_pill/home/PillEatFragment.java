@@ -26,7 +26,6 @@ import com.google.firebase.database.ValueEventListener;
 
 public class PillEatFragment extends Fragment {
 
-
     private long backPressedTime; // 뒤로 가기 버튼이 눌린 시간을 저장하기 위한 변수
     private DatabaseReference databaseRef; // Firebase 실시간 데이터베이스 참조
     private FirebaseAuth mAuth; // Firebase 인증 객체
@@ -34,7 +33,6 @@ public class PillEatFragment extends Fragment {
     private TextView textInto1;
     private TextView textInto2;
     private TextView textInto3;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -93,10 +91,16 @@ public class PillEatFragment extends Fragment {
         // Firebase 데이터 읽기
         loadPillData();
     }
+
     private void loadPillData() {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             String userId = currentUser.getUid();
+
+            // 데이터 로딩 시작 시 "로딩중..." 메시지를 표시
+            textInto1.setText("로딩중...");
+            textInto2.setText("로딩중...");
+            textInto3.setText("로딩중...");
 
             // 1번통 데이터 로드
             databaseRef.child("FirebaseEmailAccount").child("userAccount").child(userId).child("pill_schedule_1")
@@ -174,7 +178,7 @@ public class PillEatFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated( View view,  Bundle savedInstanceState) {
+    public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         view.setFocusableInTouchMode(true);
         view.requestFocus();
@@ -235,6 +239,4 @@ public class PillEatFragment extends Fragment {
         MainActivity mainActivity = (MainActivity) requireActivity();
         mainActivity.showBottomNavigationBar();
     }
-
-
 }

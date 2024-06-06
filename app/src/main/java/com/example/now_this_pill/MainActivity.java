@@ -20,6 +20,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.now_this_pill.Alarm.AlarmReceiver;
+import com.example.now_this_pill.Alarm.FirebaseListenerService;
 import com.example.now_this_pill.Fragment.CalendarFragment;
 import com.example.now_this_pill.Fragment.HomeActivity;
 import com.example.now_this_pill.Fragment.ScheduleFragment;
@@ -28,14 +29,13 @@ import com.example.now_this_pill.home.PillEatFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
-
-
-import android.content.Context;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -53,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
 
         // 화면 전환 애니메이션 설정
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setBottomNavigationView();
@@ -83,8 +82,21 @@ public class MainActivity extends AppCompatActivity {
                         sendTokenToServer(token);
                     }
                 });
-    }
 
+        // Firebase 사용자 가져오기
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            String userId = user.getUid();
+            Intent intent = new Intent(this, FirebaseListenerService.class);
+            intent.putExtra("userId", userId);
+            startService(intent);
+        } else {
+            // 유저가 로그인하지 않은 경우 처리 (예: 로그인 화면으로 이동)
+            Intent loginIntent = new Intent(this, LoginActivity.class);
+            startActivity(loginIntent);
+            finish();
+        }
+    }
 
     // 하단 네비게이션뷰 설정
     private void setBottomNavigationView() {
@@ -140,7 +152,6 @@ public class MainActivity extends AppCompatActivity {
             toolbarTitle.setText(title);
         }
     }
-
 
     // 툴바에 뒤로가기 버튼을 추가하고 클릭 이벤트 처리
     public void addBackButtonToToolbar() {

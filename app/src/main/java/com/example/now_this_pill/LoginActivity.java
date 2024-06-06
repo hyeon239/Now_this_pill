@@ -41,6 +41,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         // 화면 전환 애니메이션 설정
+
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 
 

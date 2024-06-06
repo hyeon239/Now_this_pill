@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,8 +36,9 @@ import android.os.Handler;
 import android.os.Looper;
 
 public class SettingFragment extends Fragment {
+    private long backPressedTime; // 뒤로 가기 버튼이 눌린 시간을 저장하기 위한 변수
 
-    private TextView textEmail, textName;
+    private TextView textEmail, textName, textToken;
     private int deleteButtonClickCount = 0;
     private Handler handler = new Handler(Looper.getMainLooper());
     private Runnable resetDeleteButtonClickCountRunnable = new Runnable() {
@@ -58,6 +60,7 @@ public class SettingFragment extends Fragment {
         // TextView 초기화
         textEmail = view.findViewById(R.id.text_email);
         textName = view.findViewById(R.id.text_name);
+        textToken = view.findViewById(R.id.text_token);
 
         // FirebaseAuth 인스턴스를 사용하여 현재 로그인한 사용자의 이메일을 가져옵니다.
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -68,9 +71,12 @@ public class SettingFragment extends Fragment {
             // "이메일: " 텍스트와 사용자 이메일을 함께 설정합니다.
             textEmail.setText("이메일 : " + email);
             // 이름 동기화 중 메시지 표시
-            textName.setText("이름 : 동기화 중...");
+            textName.setText("이름 : 로딩중...");
+            textToken.setText("6자리 : 로딩중...");
             // Firebase Realtime Database에서 사용자의 이름을 가져오고 설정합니다.
             loadUserName(userId);
+            // Firebase Realtime Database에서 사용자의 토큰을 가져오고 설정합니다.
+            loadUserIdtoken(userId);
         }
 
         // 설정 메뉴 생성
@@ -111,9 +117,22 @@ public class SettingFragment extends Fragment {
         });
     }
 
-    // 가져온 사용자 이름을 표시하는 메서드
-    private void displayUserName(String name) {
-        textName.setText("이름: " + name);
+    // Firebase Realtime Database에서 사용자의 토큰을 가져오는 메서드
+    private void loadUserIdtoken(String userId) {
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("FirebaseEmailAccount").child("userAccount");
+        usersRef.child(userId).child("idToken").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String token = dataSnapshot.getValue(String.class);
+                // 가져온 사용자 토큰을 설정
+                textToken.setText("6자리 : " + token);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // 데이터베이스에서 토큰을 가져오는 데 실패한 경우 처리
+            }
+        });
     }
 
     // 메뉴 아이템 클릭 이벤트 처리
@@ -191,5 +210,33 @@ public class SettingFragment extends Fragment {
             startActivity(loginIntent);
             getActivity().finish(); // 현재 액티비티 종료
         }
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        view.setFocusableInTouchMode(true);
+        view.requestFocus();
+        view.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
+                    // 현재 시간
+                    long currentTime = System.currentTimeMillis();
+                    // 첫 번째로 뒤로 가기 버튼을 눌렀을 때
+                    if (backPressedTime + 2000 > currentTime) {
+                        // 앱 종료
+                        requireActivity().finish();
+                    } else {
+                        // 두 번째로 뒤로 가기 버튼을 눌렀을 때
+                        // 사용자에게 앱 종료 안내 메시지 표시
+                        Toast.makeText(requireContext(), "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show();
+                    }
+                    backPressedTime = currentTime;
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 }

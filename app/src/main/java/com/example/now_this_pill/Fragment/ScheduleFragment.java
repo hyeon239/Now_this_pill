@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +42,7 @@ import android.os.Handler;
 
 
 public class ScheduleFragment extends Fragment {
+    private long backPressedTime; // 뒤로 가기 버튼이 눌린 시간을 저장하기 위한 변수
 
     private TextView todayTextView;
     private RecyclerView pillScheduleRecyclerView;
@@ -48,8 +50,7 @@ public class ScheduleFragment extends Fragment {
     private FirebaseAuth mAuth;
     private DatabaseReference databaseRef;
     private TextView noPillsTextView;
-    private ProgressBar loadingProgressBar; // 로딩 프로그레스 바 추가
-
+    private ProgressBar progressBar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -59,9 +60,9 @@ public class ScheduleFragment extends Fragment {
         todayTextView = view.findViewById(R.id.today);
         noPillsTextView = view.findViewById(R.id.noPillsTextView);
         pillScheduleRecyclerView = view.findViewById(R.id.pill_schedule_recycler_view);
-        pillScheduleRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        loadingProgressBar = view.findViewById(R.id.loadingProgressBar); // 로딩 프로그레스 바 초기화
+        progressBar = view.findViewById(R.id.loadingProgressBar);
 
+        pillScheduleRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         mAuth = FirebaseAuth.getInstance();
         databaseRef = FirebaseDatabase.getInstance().getReference();
@@ -83,56 +84,20 @@ public class ScheduleFragment extends Fragment {
 
         todayTextView.setText(todayDate);
 
-        // 로딩 프로그레스 바를 표시
-        loadingProgressBar.setVisibility(View.VISIBLE);
         loadPillSchedules(todayDay, todayDate);
 
         return view;
     }
 
-    Handler handler = new Handler();
     private void loadPillSchedules(String todayDay, String todayDate) {
+        progressBar.setVisibility(View.VISIBLE);
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             String userId = currentUser.getUid();
-            List<String> schedules = new ArrayList<>();
+            List<String> schedules = Arrays.asList("pill_schedule_1", "pill_schedule_2", "pill_schedule_3");
 
-            databaseRef.child("FirebaseEmailAccount").child("userAccount").child(userId)
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.exists()) {
-                                for (DataSnapshot scheduleSnapshot : dataSnapshot.getChildren()) {
-                                    if (scheduleSnapshot.getKey().startsWith("pill_schedule")) {
-                                        schedules.add(scheduleSnapshot.getKey());
-                                    }
-                                }
-                            }
-                            loadPillsFromSchedules(schedules, todayDay, todayDate);
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    loadingProgressBar.setVisibility(View.GONE);
-                                }
-                            }, 100);
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                            Toast.makeText(requireContext(), "데이터를 불러오는 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        } else {
-            Toast.makeText(requireContext(), "로그인된 사용자를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void loadPillsFromSchedules(List<String> schedules, String todayDay, String todayDate) {
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            String userId = currentUser.getUid();
             List<String> timesAndNamesList = new ArrayList<>();
-            final int[] completedCount = {0};
+            final int[] completedCount = {0}; // 완료된 콜백 수를 추적
 
             for (String schedule : schedules) {
                 databaseRef.child("FirebaseEmailAccount").child("userAccount").child(userId).child(schedule)
@@ -155,6 +120,7 @@ public class ScheduleFragment extends Fragment {
 
                                 completedCount[0]++;
                                 if (completedCount[0] == schedules.size()) {
+                                    // 모든 스케줄을 다 조회한 후 시간과 알약 이름을 정렬하여 표시
                                     Collections.sort(timesAndNamesList, new Comparator<String>() {
                                         SimpleDateFormat timeFormat = new SimpleDateFormat("a hh:mm", Locale.getDefault());
 
@@ -170,22 +136,27 @@ public class ScheduleFragment extends Fragment {
                                     });
 
                                     if (!timesAndNamesList.isEmpty()) {
-                                        adapter = new PillScheduleAdapter(getContext(), timesAndNamesList);
+                                        adapter = new PillScheduleAdapter(timesAndNamesList);
                                         pillScheduleRecyclerView.setAdapter(adapter);
                                         saveScheduleToFirebase(timesAndNamesList, todayDate);
                                         noPillsTextView.setVisibility(View.GONE);
                                     } else {
                                         noPillsTextView.setVisibility(View.VISIBLE);
                                     }
+                                    progressBar.setVisibility(View.GONE);
                                 }
                             }
 
                             @Override
                             public void onCancelled(DatabaseError databaseError) {
                                 Toast.makeText(requireContext(), "데이터를 불러오는 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                                progressBar.setVisibility(View.GONE);
                             }
                         });
             }
+        } else {
+            Toast.makeText(requireContext(), "로그인된 사용자를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
+            progressBar.setVisibility(View.GONE);
         }
     }
 
@@ -195,10 +166,11 @@ public class ScheduleFragment extends Fragment {
             String userId = currentUser.getUid();
             DatabaseReference scheduleRef = databaseRef.child("FirebaseEmailAccount").child("userAccount").child(userId).child("schedule").child(todayDate);
 
+            // 트랜잭션을 사용하여 기존 데이터를 삭제하고 새로운 데이터를 추가
             scheduleRef.runTransaction(new Transaction.Handler() {
                 @Override
                 public Transaction.Result doTransaction(MutableData mutableData) {
-                    mutableData.setValue(null);
+                    mutableData.setValue(null); // 기존 데이터 삭제
                     for (int i = 0; i < scheduleList.size(); i++) {
                         mutableData.child("스케줄" + (i + 1)).setValue(scheduleList.get(i));
                     }
@@ -213,5 +185,33 @@ public class ScheduleFragment extends Fragment {
                 }
             });
         }
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        view.setFocusableInTouchMode(true);
+        view.requestFocus();
+        view.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
+                    // 현재 시간
+                    long currentTime = System.currentTimeMillis();
+                    // 첫 번째로 뒤로 가기 버튼을 눌렀을 때
+                    if (backPressedTime + 2000 > currentTime) {
+                        // 앱 종료
+                        requireActivity().finish();
+                    } else {
+                        // 두 번째로 뒤로 가기 버튼을 눌렀을 때
+                        // 사용자에게 앱 종료 안내 메시지 표시
+                        Toast.makeText(requireContext(), "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show();
+                    }
+                    backPressedTime = currentTime;
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 }
