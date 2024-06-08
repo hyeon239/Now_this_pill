@@ -12,6 +12,8 @@ import com.google.firebase.database.ValueEventListener;
 
 public class FirebaseListenerService extends Service {
     private DatabaseReference databaseRef;
+    private boolean hasM1 = false;
+    private boolean hasM2 = false;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -25,12 +27,19 @@ public class FirebaseListenerService extends Service {
             databaseRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.hasChild("M1")) {
+                    boolean currentHasM1 = dataSnapshot.hasChild("M1");
+                    boolean currentHasM2 = dataSnapshot.hasChild("M2");
+
+                    if (currentHasM1 && !hasM1) {
                         sendNotification("복용하지 않았어요!", "약을 복용해 주세요", 1);
                     }
-                    if (dataSnapshot.hasChild("M2")) {
+                    if (currentHasM2 && !hasM2) {
                         sendNotification("외출하기 버튼이 눌렸어요", "다음 스케줄 복용약이 패스됩니다", 2);
                     }
+
+                    // Update the state
+                    hasM1 = currentHasM1;
+                    hasM2 = currentHasM2;
                 }
 
                 @Override

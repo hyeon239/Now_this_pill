@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.main_container, new PillEatFragment())
+                    .addToBackStack(null) // 백스택에 추가
                     .commit();
         }
 
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         FirebaseMessaging.getInstance().getToken()
                 .addOnCompleteListener(new OnCompleteListener<String>() {
                     @Override
-                    public void onComplete( Task<String> task) {
+                    public void onComplete(Task<String> task) {
                         if (!task.isSuccessful()) {
                             Log.w(TAG, "Fetching FCM registration token failed", task.getException());
                             return;
@@ -98,6 +99,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        // 현재 프래그먼트 스택에서 프래그먼트가 하나 이상 존재하는 경우
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            getSupportFragmentManager().popBackStack();
+        } else {
+            // 프래그먼트 스택이 비어 있는 경우
+            super.onBackPressed(); // 기본 동작 수행 (앱 종료)
+        }
+    }
+
     // 하단 네비게이션뷰 설정
     private void setBottomNavigationView() {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_view);
@@ -110,22 +122,30 @@ public class MainActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.home:
                         item.setIcon(R.drawable.m1_home_1);
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_container, new PillEatFragment()).commit();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.main_container, new PillEatFragment())
+                                .addToBackStack(null) // 백스택에 추가
+                                .commit();
                         ((TextView) findViewById(R.id.toolbar_title)).setText("지금이약!");
                         return true;
                     case R.id.schedule:
                         item.setIcon(R.drawable.m2_schedule_1);
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_container, new ScheduleFragment()).commit();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.main_container, new ScheduleFragment())
+                                .addToBackStack(null) // 백스택에 추가
+                                .commit();
                         ((TextView) findViewById(R.id.toolbar_title)).setText("일정");
                         return true;
                     case R.id.calendar:
                         item.setIcon(R.drawable.m3_calendar_1);
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_container, new CalendarFragment()).commit();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.main_container, new CalendarFragment())
+                                .addToBackStack(null) // 백스택에 추가
+                                .commit();
                         ((TextView) findViewById(R.id.toolbar_title)).setText("달력");
                         return true;
                     case R.id.setting:
                         item.setIcon(R.drawable.m4_setting_1);
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_container, new SettingFragment()).commit();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.main_container, new SettingFragment())
+                                .addToBackStack(null) // 백스택에 추가
+                                .commit();
                         ((TextView) findViewById(R.id.toolbar_title)).setText("설정");
                         return true;
                     default:
